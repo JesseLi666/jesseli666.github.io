@@ -7,18 +7,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>飞雪无情的博客 | 半路出家程序猿</title>
-    <meta property="og:title" content="飞雪无情的博客 | 半路出家程序猿">
-    <meta property="og:type" content="website">
+    <title>归档 | 飞雪无情的博客</title>
+    <meta property="og:title" content="归档 - 飞雪无情的博客">
+    <meta property="og:type" content="article">
+        
+        
     <meta name="Keywords" content="机器学习,数据挖掘,推荐系统,python">
-    <meta name="description" content="研一在读CS专业硕士，主要研究方向为数据挖掘与推荐系统">
-    <meta property="og:url" content="http://www.flysnow.org/">
+    <meta name="description" content="半路出家程序猿">
+        
+    <meta name="author" content="飞雪无情">
+    <meta property="og:url" content="http://www.flysnow.org/archives/">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="/css/normalize.css">
     
+        <link rel="stylesheet" href="/css/prism.css">
+    
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="alternate" type="application/rss+xml+xml" href="http://www.flysnow.org/index.xml" title="飞雪无情的博客" />
     <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 
     
@@ -35,19 +40,17 @@
         <div class="col-group">
             <div class="site-name ">
                 
-                    <h1>
-                        <a id="logo" href="http://www.flysnow.org">
-                            飞雪无情的博客
-                        </a>
-                    </h1>
+                    <a id="logo" href="http://www.flysnow.org">
+                        飞雪无情的博客
+                    </a>
                 
                 <p class="description">半路出家程序猿</p>
             </div>
             <div>
                 <nav id="nav-menu" class="clearfix">
-                    <a class="current" href="http://www.flysnow.org">首页</a>
+                    <a class="" href="http://www.flysnow.org">首页</a>
                     
-                    <a  href="http://www.flysnow.org/archives/" title="归档">归档</a>
+                    <a class="current" href="http://www.flysnow.org/archives/" title="归档">归档</a>
                     
                     <a  href="http://www.flysnow.org/about/" title="关于">关于</a>
                     
@@ -63,29 +66,18 @@
         <div class="col-group">
 
             <div class="col-8" id="main">
-                <div class="res-cons">
+                <div class="post-archive">
                     
-                        <article class="post">
-                            <header>
-                                <h1 class="post-title">
-                                    <a href="http://www.flysnow.org/post/hello/" title="Hello" >Hello</a>
-                                </h1>
-                            </header>
-                            <date class="post-meta meta-date">
-                                2019年3月14日
-                            </date>
-                            
-                            <div class="post-content">
-                                Hello This is the first article in my blog.……
-                            </div>
-                            <p class="readmore"><a href="http://www.flysnow.org/post/hello/">阅读全文</a></p>
-                        </article>
+                    <h2>2019</h2>
+                    <ul class="listing">
+                        
+                        <li>
+                            <span class="date">2019/03/14</span>
+                            <a href="http://www.flysnow.org/post/hello/" title="Hello">Hello</a>
+                        </li>
+                        
+                    </ul>
                     
-
-                    
-
-
-
 
                 </div>
             </div>
@@ -159,6 +151,22 @@
     </div>
 </footer>
 
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 
 <a id="rocket" href="#top"></a>
 <script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
