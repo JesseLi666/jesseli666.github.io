@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.54.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CS224n Lecture 2 Word2Vec | JesseLi&#39;s Blog</title>
+    <meta property="og:title" content="CS224n Lecture 2 Word2Vec - JesseLi&#39;s Blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2019-03-16T12:00:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2019-03-16T12:00:00&#43;08:00">
+        
+    <meta name="Keywords" content="机器学习,数据挖掘,推荐系统,python">
+    <meta name="description" content="CS224n Lecture 2 Word2Vec">
+        
+    <meta name="author" content="JesseLi">
+    <meta property="og:url" content="https://jesseli666.github.io/post/cs224n-lecture-2/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+        <link rel="stylesheet" href="/css/prism.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://jesseli666.github.io">
+                        JesseLi&#39;s Blog
+                    </a>
+                
+                <p class="description">半路出家程序猿</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://jesseli666.github.io">首页</a>
+                    
+                    <a  href="https://jesseli666.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://jesseli666.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">CS224n Lecture 2 Word2Vec</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2019年3月16日
+                        </date>
+                        
+                        <div class="post-meta">
+                            <span>|</span>
+                            
+                                <span class="meta-category"><a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">CS224n 学习笔记</a></span>
+                            
+                        </div>
+                        
+                        
+                        <div class="post-content">
+                            
+
+<h1 id="word2vec">Word2Vec</h1>
+
+<blockquote>
+<p>本次课程介绍了Word Embedding的常用方法——Word2Vec的基本原理，与简单的函数推导、训练过程。</p>
+</blockquote>
+
+<p>#####传统的词义表示</p>
+
+<p>传统方法如Wordnet，提供了英语词汇的分类信息</p>
+
+<p>存在大量的同义词资源，但是很难利用；缺失新词汇；主观；很难计算词的相似度</p>
+
+<p>早期NLP工作将单词视为原子符号，即one-hot表示（一个为1，其余为0），维数爆炸，而one-hot向量没有天然相似性</p>
+
+<h5 id="分布相似性">分布相似性</h5>
+
+<p>分布相似性（Distributional similarity）即通过词语的上下文，能够得到大量表示其含义的词，是线代统计自然语言处理最成功的思想之一</p>
+
+<p>分布式表示（Distributional representation）即用密集向量表示词汇的含义</p>
+
+<h5 id="word2vec-1">Word2Vec</h5>
+
+<p>basic idea：定义一个模型，通过中心词预测上下文词汇，预测的概率为：
+$$
+p(context\mid w<em>t) = \dots
+$$
+损失函数即为：
+$$
+J = 1 - p(w</em>{-t}\mid w<em>t)
+$$
+$w</em>{-t}$表示除$w_{t}$之外的其他上下文词汇</p>
+
+<p>这种思想并不是什么新想法(Rumelhart et al., 1986)，Bengio et al. (2003)将其用作词汇表示，当时没什么人关注，因为DL还不流行。Collobert &amp; Weston(2013)认为可以只需要得到词的表示，而不需要language model。这就是word2vec(Mikolov et al. 2013)模型，简单、可扩展。</p>
+
+<p>word2vec是一个软件，包括很多东西：两个生成词向量的方法（Skip-grams &amp; Continuous Bag of Words）和两个有效的训练方法（Hierarchical softmax &amp; Negative sampling），但是本节课只介绍skip-gram和一种低效率的训练方法（最最基本的Naïve softmax）</p>
+
+<h5 id="skip-gram">Skip-gram</h5>
+
+<p><img src="/assets/1548128011608.png" alt="1548128011608" /></p>
+
+<p>在每一步选取一个单词，尝试预测一定范围内的上下文单词。模型定义了一个概率分布，即给定一个中心词汇，某个单词在它上下文中出现的概率。选取词汇的向量表示，尝试让概率分布最大化。</p>
+
+<p>需要注意，模型中对一个单词只有一个概率分布。</p>
+
+<p>定义一个半径m，从中心词汇开始，预测m距离之内的单词，目标函数为：
+$$
+J&rsquo;(\theta)=\prod<em>{t=1}^T \prod</em>{-m\le j\le m,j\ne0}p(w_{t+j}\mid w_t;\theta)
+$$
+对文本中的每个单词，定义一个围绕中心单词的2m的窗口，得到一个概率分布，设置模型的参数目的是使概率尽可能的高，$\theta$为即模型的参数，即词汇的向量表示。</p>
+
+<p>取对数可以把积转化为和，在数学上更简单。得到负的对数似然，也就是要最小化的目标函数：
+$$
+J(\theta)=-\frac{1}{T} \sum<em>{t=1}^T \sum</em>{-m\le j\le m,j\ne0}\log p(w_{t+j}\mid w_t)
+$$
+负的对数似然意味着使用交叉熵损失函数（后面会讲）。</p>
+
+<p>概率分布的形式：
+$$
+p(o\mid c)=\frac{\exp(u_o^Tv<em>c)}{\sum</em>{w=1}^V \exp(u_w^T v_c)}
+$$
+o和c代表输出单词和中心单词的索引</p>
+
+<p>点积的结果为一个数值，这里使用了softmax函数，将数值转化为概率。</p>
+
+<p>需要注意的是，每个单词有u和v两个向量，两个向量相互独立，使得优化时不会互相耦合。</p>
+
+<p><img src="/assets/1548144051284.png" alt="as1548144051284" /></p>
+
+<h5 id="sentence-embedding">Sentence Embedding</h5>
+
+<p>介绍论文《A Simple but Tough-to-beat Baseline for Sentence Embeddings》, Princeton University,  ICLR 2017。这一部分由Danqi Chen讲授。</p>
+
+<p>Sentence Embedding可以用来计算句子的相似度、句子分析（如情感分类任务）等。</p>
+
+<p>得到Sentence Embedding的方法有：</p>
+
+<ul>
+<li>词袋 Bag-of-words(BoW)</li>
+</ul>
+
+<p>最简单的方法，词向量取平均</p>
+
+<p>v(“natural language processing”) = <sup>1</sup>&frasl;<sub>3</sub> (v(“natural”) + v(“language”) + v(“processing”))</p>
+
+<ul>
+<li><p>Recurrent neural networks</p></li>
+
+<li><p>Recursive neural networks</p></li>
+
+<li><p>Convolutional neural networks</p></li>
+</ul>
+
+<p>这篇论文介绍了一种简单的无监督学习方法：</p>
+
+<p>第一步是计算向量表示的平均值，每个单词有权重值</p>
+
+<p><img src="/assets/1548145085786.png" alt="1548145085786" /></p>
+
+<p>权重表示为$\frac{a}{a+p(w)}$ ，其中$a$为常数，$p(w)$为单词$w$出现的频率</p>
+
+<p>第二步减去在第一主成分上的投影（PCA）</p>
+
+<p><img src="/assets/1548145293020.png" alt="1548145293020" /></p>
+
+<p>基本思路是：给定上下文中，一个词的出现概率由上下文和作为平滑项的词频决定（这儿没太听懂）</p>
+
+<h5 id="word2vec-训练">Word2Vec 训练</h5>
+
+<p>$$
+p(o\mid c)=\frac{\exp(u_o^Tv<em>c)}{\sum</em>{w=1}^V \exp(u_w^T v_c)}
+$$</p>
+
+<p>要调整参数，也就是向量，使得负的对数似然项最小化。</p>
+
+<p>求导数：
+$$
+\frac{\partial}{\partial v_c}\log\frac{\exp(u_o^Tv<em>c)}{\sum</em>{w=1}^V \exp(u_w^T v_c)}
+$$</p>
+
+<p>$$
+\frac{\partial}{\partial v_c}[\log \exp(u_o^Tv<em>c)-\log{\sum</em>{w=1}^V \exp(u_w^T v_c)}]
+$$</p>
+
+<p>对前一部分$\frac{\partial}{\partial v_c} \log \exp(u_o^Tv_c)$ ，变成 $\frac{\partial}{\partial v_c} (u_o^Tv_c) \rightarrow u_o$</p>
+
+<p>对后一部分$\frac{\partial}{\partial v<em>c}\log{\sum</em>{w=1}^V \exp(u_w^T v_c)}$ ，使用链式法则
+$$
+\begin{align}
+&amp;\frac{\partial}{\partial v<em>c}\log{\sum</em>{w=1}^V \exp(u_w^T v<em>c)}<br />
+&amp;= \frac{1}{\sum</em>{w=1}^V \exp(u_w^Tv_c)}\cdot\frac{\partial}{\partial v<em>c}\sum</em>{x=1}^V \exp(u_x^T v<em>c)<br />
+&amp;= \frac{1}{\sum</em>{w=1}^V \exp(u_w^Tv<em>c)}\cdot \sum</em>{x=1}^V \frac{\partial}{\partial v_c} \exp(u_x^T v<em>c) <br />
+&amp;= \frac{1}{\sum</em>{w=1}^V \exp(u_w^Tv<em>c)}\cdot \sum</em>{x=1}^V \exp(u_x^T v_c)\cdot \frac{\partial}{\partial v_c}(u_x^Tv<em>c)<br />
+&amp;= \frac{1}{\sum</em>{w=1}^V \exp(u_w^Tv<em>c)}\cdot \sum</em>{x=1}^V \exp(u_x^T v_c)\cdot u<em>x<br />
+&amp;= \sum</em>{x=1}^V \frac{ \exp(u_x^T v<em>c)}{\sum</em>{w=1}^V \exp(u_w^Tv_c)}\cdot u<em>x<br />
+&amp;= \sum</em>{x=1}^Vp(x\mid c)\cdot u_x
+\end{align}
+$$
+得
+$$
+\frac{\partial}{\partial v_c}\log\frac{\exp(u_o^Tv<em>c)}{\sum</em>{w=1}^V \exp(u_w^T v_c)} = u<em>o - \sum</em>{x=1}^Vp(x\mid c)\cdot u_x
+$$</p>
+
+<h5 id="梯度下降">梯度下降</h5>
+
+<p>前面是一些梯度下降的基本知识，不再赘述。</p>
+
+<p>使用随机梯度下降（SGD），即选取文本中的一个位置，对所有的参数求解梯度，然后前进一小步。这种估计很粗糙，但是实际证明很有效。</p>
+
+                        </div>
+
+                        
+
+
+                        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/cs224n-lecture-1-introduction/">CS224n Lecture 1 Introduction</a></li>
+        
+        <li><a href="/post/hello/">Hello</a></li>
+        
+        <li><a href="/archives/">Archives</a></li>
+        
+    </ul>
+</div>
+
+
+                        <div class="post-meta meta-tags">
+                            
+                            <ul class="clearfix">
+                                
+                                <li><a href="https://jesseli666.github.io/tags/cs224n">CS224n</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86">自然语言处理</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a></li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </article>
+                    
+    
+
+    
+    
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        <form id="search" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://jesseli666.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-6/" title="CS224n Lecture 6 依存语法分析">CS224n Lecture 6 依存语法分析</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-5/" title="CS224n Lecture 5 反向传播算法">CS224n Lecture 5 反向传播算法</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-4/" title="CS224n Lecture 4 词分类">CS224n Lecture 4 词分类</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-3/" title="CS224n Lecture 3 高级词向量表示">CS224n Lecture 3 高级词向量表示</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-2/" title="CS224n Lecture 2 Word2Vec">CS224n Lecture 2 Word2Vec</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-1-introduction/" title="CS224n Lecture 1 Introduction">CS224n Lecture 1 Introduction</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/hello/" title="Hello">Hello</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">cs224n-学习笔记(6)</a>
+    </li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://jesseli666.github.io/tags/cs224n/">cs224n</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">友情链接</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="http://info.ruc.edu.cn" title="中国人民大学信息学院">中国人民大学信息学院</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://jesseli666.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+        &copy; 2019 <a href="https://jesseli666.github.io">JesseLi&#39;s Blog By JesseLi</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        <a href="https://www.flysnow.org/" target="_blank">Theme</a> based on <a href="https://github.com/rujews/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
+
+
+
+
+
+
+</body>
+</html>

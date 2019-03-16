@@ -211,12 +211,14 @@ textarea {
     margin:10px 0 -1px;
     padding:0;
     float:right;
+	text-align:center;
 }
 #nav-menu a {
     display:inline-block;
     margin-right:-1px;
-    padding:0 1em;
+    padding:0 0;
     height:32px;
+	width:90px;
     line-height:32px;
     color:#444;
 }
@@ -266,7 +268,7 @@ textarea {
 }
 #secondary {
     float:right;
-    width:245px;
+    width:240px;
     border-left:1px solid #ddd;
     padding-left:35px;
     word-wrap:break-word;
@@ -793,6 +795,7 @@ img.alignright {
     }
     #nav-menu {
         margin:35px 0 -1px;
+		float:none;
     }
     .res-cons {
         width:auto;
@@ -824,10 +827,15 @@ img.alignright {
     .post {
         padding:12px 0;
     }
+	#nav-menu {
+        margin:35px 0 -1px;
+		float:none;
+    }
     #nav-menu a {
         padding:0 15px;
         line-height:27px;
         height:27px;
+		width:40px;
         font-size:13px;
     }
 }

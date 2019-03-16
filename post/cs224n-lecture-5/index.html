@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.54.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CS224n Lecture 5 反向传播算法 | JesseLi&#39;s Blog</title>
+    <meta property="og:title" content="CS224n Lecture 5 反向传播算法 - JesseLi&#39;s Blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2019-03-16T15:00:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2019-03-16T15:00:00&#43;08:00">
+        
+    <meta name="Keywords" content="机器学习,数据挖掘,推荐系统,python">
+    <meta name="description" content="CS224n Lecture 5 反向传播算法">
+        
+    <meta name="author" content="JesseLi">
+    <meta property="og:url" content="https://jesseli666.github.io/post/cs224n-lecture-5/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+        <link rel="stylesheet" href="/css/prism.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://jesseli666.github.io">
+                        JesseLi&#39;s Blog
+                    </a>
+                
+                <p class="description">半路出家程序猿</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://jesseli666.github.io">首页</a>
+                    
+                    <a  href="https://jesseli666.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://jesseli666.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">CS224n Lecture 5 反向传播算法</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2019年3月16日
+                        </date>
+                        
+                        <div class="post-meta">
+                            <span>|</span>
+                            
+                                <span class="meta-category"><a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">CS224n 学习笔记</a></span>
+                            
+                        </div>
+                        
+                        
+                        <div class="post-content">
+                            
+
+<h1 id="反向传播算法">反向传播算法</h1>
+
+<blockquote>
+<p>本节课是对反向传播算法的详细介绍，使用勒四种方法来介绍反向传播。</p>
+</blockquote>
+
+<p>在很多情况下，反向传播将只是一个抽象的概念，只需要调包就能实现功能。但是在实际操作过程中可能会遇到问题，如果没用真正理解反向传播，就不知道产生问题的原因。</p>
+
+<h5 id="第一种解释">第一种解释</h5>
+
+<p><img src="/assets/1549701680672.png" alt="1549701680672" /></p>
+
+<p>上图是一个含有两个隐藏层的神经网络模型，最后的score的计算方法与上一节课相同。
+$$
+\begin{align}
+s &amp;= U^Tf(W^{(2)}f(W^{(1)}x+b^{(1)})+b^{(2)}) <br />
+&amp;= U^Tf(W^{(2)}a^{(2)}+b^{(2)}) <br />
+&amp;= U^Ta^{(3)}
+\end{align}
+$$
+由之前的推导$\frac{\partial s}{\partial W_{ij}}=U_if&rsquo;(z_i)x_j=\delta_ix_j$</p>
+
+<p>可得类似的梯度
+$$
+\frac{\partial s}{\partial W_{ij}^{(2)}}=U_if&rsquo;(z_i^{(3)})a_j^{(2)}=\delta_i^{(3)}a_j^{(2)}
+$$
+在整个矩阵的维度
+$$
+\frac{\partial s}{\partial W^{(2)}}=\delta^{(3)}a^{(2)^T}
+$$</p>
+
+<p>$$
+\text{where} \quad \delta^{(3)}=U\otimes f&rsquo;(z^{(3)})
+$$</p>
+
+<p>继续推导
+$$
+\frac{\partial s}{\partial W^{(1)}}=\delta^{(2)}x^T
+$$</p>
+
+<p>$$
+\text{where} \quad \delta^{(2)}=(W^{(2)^T}\delta^{(3)})\otimes f&rsquo;(z^{(2)})
+$$</p>
+
+<p>我们可以得到对任意层l的梯度推导
+$$
+\frac{\partial}{\partial W^{(l)}}E_R=\delta^{(l+1)}(a^{(l)})^T+\lambda W^{(l)}
+$$</p>
+
+<p>$$
+\text{where} \quad \delta^{(l)}=\Bigl((w^{(l)})^T\delta^{(l+1)}\Bigr)\otimes f&rsquo;(z^{(l)})
+$$</p>
+
+<p>顶层和底层也可以用这个公式，只不过误差$\delta$ 更简单</p>
+
+<h5 id="第二种解释">第二种解释</h5>
+
+<p>第二种解释没有涉及到神经网络。</p>
+
+<p>函数$f(x,y,z)=(x+y)z$可以用下图表示：</p>
+
+<p><img src="/assets/1549983647465.png" alt="1549983647465" /></p>
+
+<p>我们定义$q=x+y,\quad f=qz$，根据链式法则计算各个导数。</p>
+
+<p>以计算$\frac{\partial f}{\partial x}$为例，先计算$\frac{\partial f}{\partial q}$再计算$\frac{\partial q}{\partial x}$，用下一层节点的值乘以上一层节点的值。</p>
+
+<p><img src="/assets/1549984142279.png" alt="1549984142279" /></p>
+
+<p>如上图，这种方法把所有的函数都看做路线。计算时首先前向传播计算函数的值（如通过x和y计算z的值），然后反向传播计算梯度。在反向传播的过程中，从更高层的节点得到梯度信号（$\frac{\partial L}{\partial z}$），再根据链式法则计算低层的梯度（$\frac{\partial L}{\partial x}=\frac{\partial L}{\partial z}\frac{\partial z}{\partial x}$），并向后传播。</p>
+
+<p>另一个例子
+$$
+f(w,x)=\frac{1}{1+e^{-(w_0x_0+w_1x_1+w_2)}}
+$$
+ 画成路线图如下图所示：</p>
+
+<p><img src="/assets/1550048049534.png" alt="1550048049534" /></p>
+
+<p>首先前向计算函数的值，然后反向计算各个节点的梯度值。</p>
+
+<p>第一个节点的梯度值为$\frac{\partial f}{\partial f} = 1$</p>
+
+<p>第二个节点的梯度值为$1*\frac{-1}{1.37^2}=-0.53$</p>
+
+<p>依次向后类推，计算得到梯度值如下：</p>
+
+<p><img src="/assets/1550048608519.png" alt="1550048608519" /></p>
+
+<p>也可以将sigmoid函数的操作合并起来作为路线上的一个节点
+$$
+\sigma(x)=\frac{1}{1+e^{-x}}
+$$</p>
+
+<p>$$
+\frac{d\sigma(x)}{dx}=(1-\sigma(x))\sigma(x)
+$$</p>
+
+<p>#####第三种解释</p>
+
+<p>流动图</p>
+
+<p><img src="/assets/1551453818626.png" alt="1551453818626" /></p>
+
+<p><img src="/assets/1551453883633.png" alt="1551453883633" /></p>
+
+<p>前向计算每个结点的值，再反向计算每个结点的梯度。</p>
+
+<h5 id="第四种解释">第四种解释</h5>
+
+<p>第四种解释把前面的综合了起来，还是以一开始的神经网络为例。</p>
+
+<p><img src="/assets/1551455247103.png" alt="1551455247103" /></p>
+
+<p>假设有误差信号$\delta ^{(3)}$，穿过$w^{(2)}$之后，得到对$a^{(2)}$的导数。</p>
+
+<p><img src="/assets/1551455591793.png" alt="1551455591793" /></p>
+
+<p>然后穿过$\sigma $到达$W^{(1)}$，得到导数如上图。</p>
+
+<h5 id="fasttext">fastText</h5>
+
+<p>Bag of Tricks for Eficient Text Classification</p>
+
+<p>介绍了一种叫 fastText 的线性文本分类模型，模型结构如下：</p>
+
+<p><img src="/assets/1551456437884.png" alt="1551456437884" /></p>
+
+<p>损失函数为：</p>
+
+<p><img src="/assets/1551456476688.png" alt="1551456476688" /></p>
+
+<p>使用了层级的Softmax</p>
+
+<p><img src="/assets/1551456526723.png" alt="1551456526723" /></p>
+
+<p>将大的分类再划分成小的分类，可把复杂度由 O(kh) 降低到 O(h logk)。</p>
+
+<p>这种方法比神经网络快了很多，并且效果也不差。</p>
+
+<h5 id="项目建议">项目建议</h5>
+
+<p>接下来讲了一些和课程大作业有关的事情，不再赘述。</p>
+
+<p>评价指标：F1，BLEU，ROUGE等</p>
+
+                        </div>
+
+                        
+
+
+                        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/cs224n-lecture-4/">CS224n Lecture 4 词分类</a></li>
+        
+        <li><a href="/post/cs224n-lecture-3/">CS224n Lecture 3 高级词向量表示</a></li>
+        
+        <li><a href="/post/cs224n-lecture-2/">CS224n Lecture 2 Word2Vec</a></li>
+        
+        <li><a href="/post/cs224n-lecture-1-introduction/">CS224n Lecture 1 Introduction</a></li>
+        
+        <li><a href="/post/hello/">Hello</a></li>
+        
+    </ul>
+</div>
+
+
+                        <div class="post-meta meta-tags">
+                            
+                            <ul class="clearfix">
+                                
+                                <li><a href="https://jesseli666.github.io/tags/cs224n">CS224n</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86">自然语言处理</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a></li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </article>
+                    
+    
+
+    
+    
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        <form id="search" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://jesseli666.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-6/" title="CS224n Lecture 6 依存语法分析">CS224n Lecture 6 依存语法分析</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-5/" title="CS224n Lecture 5 反向传播算法">CS224n Lecture 5 反向传播算法</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-4/" title="CS224n Lecture 4 词分类">CS224n Lecture 4 词分类</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-3/" title="CS224n Lecture 3 高级词向量表示">CS224n Lecture 3 高级词向量表示</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-2/" title="CS224n Lecture 2 Word2Vec">CS224n Lecture 2 Word2Vec</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-1-introduction/" title="CS224n Lecture 1 Introduction">CS224n Lecture 1 Introduction</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/hello/" title="Hello">Hello</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">cs224n-学习笔记(6)</a>
+    </li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://jesseli666.github.io/tags/cs224n/">cs224n</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">友情链接</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="http://info.ruc.edu.cn" title="中国人民大学信息学院">中国人民大学信息学院</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://jesseli666.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+        &copy; 2019 <a href="https://jesseli666.github.io">JesseLi&#39;s Blog By JesseLi</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        <a href="https://www.flysnow.org/" target="_blank">Theme</a> based on <a href="https://github.com/rujews/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.54.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CS224n Lecture 4 词分类 | JesseLi&#39;s Blog</title>
+    <meta property="og:title" content="CS224n Lecture 4 词分类 - JesseLi&#39;s Blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2019-03-16T14:00:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2019-03-16T14:00:00&#43;08:00">
+        
+    <meta name="Keywords" content="机器学习,数据挖掘,推荐系统,python">
+    <meta name="description" content="CS224n Lecture 4 词分类">
+        
+    <meta name="author" content="JesseLi">
+    <meta property="og:url" content="https://jesseli666.github.io/post/cs224n-lecture-4/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+        <link rel="stylesheet" href="/css/prism.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://jesseli666.github.io">
+                        JesseLi&#39;s Blog
+                    </a>
+                
+                <p class="description">半路出家程序猿</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://jesseli666.github.io">首页</a>
+                    
+                    <a  href="https://jesseli666.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://jesseli666.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">CS224n Lecture 4 词分类</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2019年3月16日
+                        </date>
+                        
+                        <div class="post-meta">
+                            <span>|</span>
+                            
+                                <span class="meta-category"><a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">CS224n 学习笔记</a></span>
+                            
+                        </div>
+                        
+                        
+                        <div class="post-content">
+                            
+
+<h1 id="词分类">词分类</h1>
+
+<blockquote>
+<p>本节课构建了一个简单的神经网络模型进行词分类任务，因为单独的词分类任务很少见，所以举了一个NER（命名实体识别）任务的例子，并详细介绍了使用梯度下降进行优化的计算过程。</p>
+</blockquote>
+
+<h5 id="一些标记">一些标记</h5>
+
+<p>通常有一个训练集
+$$
+{x_i,y<em>i}^N</em>{i=1}
+$$
+x是input，比如单个单词或词向量，上下文窗口；y是label，可以是感情倾向，或是命名实体，词序列等。</p>
+
+<p>在机器学习领域，分类问题可以被认为是简单的逻辑回归，也就是学习一个决策边界。</p>
+
+<p>通常x是确定的，只学习逻辑回归的权重W</p>
+
+<h5 id="softmax">Softmax</h5>
+
+<p>$$
+p(y\mid x)=\frac{\exp(W<em>y\cdot x)}{\sum</em>{c=1}^C\exp(W_c\cdot x)},W\in\mathbb{R}^{C\times d}
+$$</p>
+
+<p>我们可以把计算过程分成两部分</p>
+
+<ol>
+<li>对于所有的分类，计算$f_c = W_c\cdot x$</li>
+<li>通过归一化，将向量输入softmax，计算得到概率分布</li>
+</ol>
+
+<p>我们希望模型可以最大化正确输出的概率，最大化概率=最大化对数概率=最小化对数概率的负数，取对数概率的负数最为目标函数，也就是交叉熵误差</p>
+
+<p>假设真实（truth or gold or target）概率分布为为p=[0,0,&hellip;,1,0]，即正确的为1，其余为0，而计算出的概率分布为q，那么交叉熵为：
+$$
+H(p,q) = -\sum_{c=1}^Cp&copy;\log q&copy;
+$$
+因为p是one-hot的，所以交叉熵等于对数概率的负数。</p>
+
+<p>整个数据集上的交叉熵损失函数为：
+$$
+J(\theta)=\frac{1}{N}\sum<em>{i=1}^N-\log(\frac{e^{f</em>{y<em>i}}}{\sum</em>{c=1}^Ce^{f_c}})
+$$
+其中
+$$
+f_y = f_y(x)=W<em>y\cdot x=\sum</em>{j=1}^dW_{yj}x_j
+$$
+也可以表示为矩阵形式$f=Wx$</p>
+
+<p>在实际应用中还会用到正则项，为了鼓励模型中的所有权值尽可能小，避免过拟合：
+$$
+J(\theta)=\frac{1}{N}\sum<em>{i=1}^N-\log(\frac{e^{f</em>{y<em>i}}}{\sum</em>{c=1}^Ce^{f_c}})+\lambda\sum_k\theta_k^2
+$$
+如果训练集较小，应该在一个大的语料库上训练词向量，然后在训练分类器时保持词向量不变，否则会失去泛化性；如果训练集很大，则可以随即初始化词向量然后学习它。</p>
+
+<h5 id="window-classification">window classification</h5>
+
+<p>事实上，单独对词进行分类很少见，实际上想做的是在上下文中对单词进行分类。</p>
+
+<p>第一个例子是命名实体识别任务，对语料库中的每个单词，识别是人名、地名、组织名还是其他。</p>
+
+<p><img src="/assets/1548685070077.png" alt="1548685070077" /></p>
+
+<p>上图描述了这一任务，取长度为2的词窗口，把中间词的标签作为窗口的标签进行分类。</p>
+
+<p>最简单的方法就是把五个词向量的拼接放入softmax分类器，下面介绍如何更新词向量：</p>
+
+<h5 id="更新词向量">更新词向量</h5>
+
+<p>规定$\hat{y}$为softmax输出向量，t为目标概率分布</p>
+
+<p>链式法则为：
+$$
+y=f(u), u=g(x), y=f(g(x))
+$$</p>
+
+<p>$$
+\frac{dy}{dx}=\frac{dy}{du}\frac{du}{dx}=\frac{df(u)}{du}\frac{dg(x)}{dx}
+$$</p>
+
+<p>$$
+\frac{\partial}{\partial x}-\log softmax(f<em>y(x))=\sum</em>{c=1}^C -\frac{\partial \log softmax(f_y(x))}{\partial f_c}\cdot \frac{\partial f_c(x)}{\partial x}
+$$</p>
+
+<p>$$
+\frac{\partial}{\partial f}-\log softmax(f_y)=\begin{bmatrix} \hat{y}_1\\vdots\\hat {y}_y - 1\\vdots\\hat y_C \end{bmatrix}=[\hat y-t]=\delta
+$$</p>
+
+<p>上面的推导是作业的一部分
+$$
+\sum_{c=1}^C -\frac{\partial \log softmax(f_y(x))}{\partial f_c}\cdot \frac{\partial f<em>c(x)}{\partial x}=\sum</em>{c=1}^C\delta_cW_c^T
+$$</p>
+
+<p>$$
+\frac{\partial}{\partial x}-\log p(y\mid x)=\sum_{c=1}^C\delta_cW_c^T=W^T\delta
+$$</p>
+
+<p>$$
+\nabla_xJ=W^T\delta\in\mathbb{R}^{5d}
+$$</p>
+
+<p>得到了窗口的梯度，但是我们想更新的是词向量而不是整个窗口，只需拆分总体梯度。
+$$
+\nabla<em>xJ=\delta</em>{x<em>{window}}=\begin{bmatrix}\nabla</em>{x<em>{museums}}\\nabla</em>{x<em>{in}}\\nabla</em>{x<em>{Paris}}\\nabla</em>{x<em>{are}}\\nabla</em>{x_{amazing}}\end{bmatrix}\in\mathbb{R}^{5d}
+$$</p>
+
+<p>然后计算 $J$ 关于softmax的权值 $W$ 的梯度，得到整个模型的总体梯度
+$$
+\nabla<em>{\theta}J(\theta)=\begin{bmatrix}\nabla</em>{W<em>{1}}\\vdots\\nabla</em>{W<em>{d}}\\nabla</em>{x<em>{aardvark}}\\vdots\\nabla</em>{x_{zebra}}\end{bmatrix}\in\mathbb{R}^{Cd+Vd}
+$$
+这个梯度是十分稀疏的，更新时没必要在每个窗口都发送全部梯度。</p>
+
+<p>在更新过程中计算代价最高的是矩阵运算$f=Wx$和指数运算，这里矩阵运算比循环要快多了</p>
+
+<pre><code class="language-python">%timeit [W.dot(wordvectors_list[i]) for i in range(N)]
+# 756 µs ± 5.5 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+%timeit W.dot(wordvectors_one_matrix)
+# 43.6 µs ± 442 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+</code></pre>
+
+<h5 id="softmax与神经网络">Softmax与神经网络</h5>
+
+<p><img src="/assets/1549626342070.png" alt="1549626342070" /></p>
+
+<p>Softmax（=对数几率回归）只能得到线性的决策边界（左），而神经网络能够得到更复杂的非线性决策边界（右）。</p>
+
+<p>神经网络中的一个神经元可以被视为一个二元对数几率回归单元：
+$$
+h_{w,b}=f(w^Tx + b)
+$$</p>
+
+<p>$$
+f(z)=\frac{1}{1+e^{-z}}
+$$</p>
+
+<p>那么神经网络可以被视为同时进行多个对数几率回归，但是并不强制输出结果，因为前一层的输出被当做下一层的输入。用最后一层的损失函数来控制前面的隐藏层。</p>
+
+<p><img src="/assets/1549626916225.png" alt="1549626916225" /></p>
+
+<h5 id="引入神经网络">引入神经网络</h5>
+
+<p>下面是一个简单的3层神经网络
+$$
+z = Wx + b
+$$</p>
+
+<p>$$
+a = f(z)
+$$</p>
+
+<p>$$
+p(y\mid x)=\text{softmax}(Wa)
+$$</p>
+
+<p>在下面这个NER任务中，使用一个未归一化的分数替代softmax。
+$$
+score(x)=U^Ta\in\mathbb{R}
+$$
+ <img src="/assets/1549628617657.png" alt="1549628617657" /></p>
+
+<p>输入是一个20维的向量，将其定义为列向量，假设第一个隐藏层有8个单元，W的维度则为8行20列。任务的目标是判别输入的这个窗口的中心词是否是一个地名。
+$$
+x\in\mathbb{R}^{20\times 1}, W\in\mathbb{R}^{8\times 20},U\in\mathbb{R}^{8\times 1}
+$$
+中间层的作用是学习不同词向量之间的非线性相互作用，例如如果前一个单词是&rdquo;in&rdquo;，则中心词是地名的概率会增加。</p>
+
+<p>##### 最大间隔损失函数</p>
+
+<p>目标是使得正确的窗口的得分更高，而错误窗口的得分更低。
+$$
+J=\max(0,1-s+s_c)
+$$
+s = score(museums in Paris are amazing)，即正确窗口</p>
+
+<p>sc = score(Not all museums in Paris)，即错误窗口</p>
+
+<h5 id="使用反向传播训练">使用反向传播训练</h5>
+
+<p>$$
+\frac{\partial s}{\partial W}=\frac{\partial}{\partial W}U^Ta=\frac{\partial}{\partial W}U^Tf(z)=\frac{\partial}{\partial W}U^Tf(Wx+b)
+$$</p>
+
+<p>并不需要考虑所有的权重，因为一个a只与一个W有关
+$$
+\frac{\partial}{\partial W<em>{ij}}U^Ta \rightarrow\frac{\partial}{\partial W</em>{ij}}U_ia_i
+$$</p>
+
+<p>$$
+\begin{align}
+U<em>i\frac{\partial}{\partial W</em>{ij}}a_i &amp;= U_i\frac{\partial a_i}{\partial z_i}\frac{\partial z<em>i}{\partial W</em>{ij}}<br />
+&amp;= U_i\frac{\partial f(z_i)}{\partial z_i}\frac{\partial z<em>i}{\partial W</em>{ij}}<br />
+&amp;= U_i f&rsquo;(z_i) \frac{\partial z<em>i}{\partial W</em>{ij}}<br />
+&amp;= U_i f&rsquo;(z<em>i) \frac{\partial W</em>{i\cdot}x+b<em>i}{\partial W</em>{ij}}<br />
+&amp;= U_i f&rsquo;(z<em>i) \frac{\partial}{\partial W</em>{ij}}\sum<em>k {W</em>{ik}x_k}<br />
+&amp;= U_i f&rsquo;(z_i) x_j<br />
+&amp;= \delta_i x_j
+\end{align}
+$$</p>
+
+<p>我们得到
+$$
+\frac{\partial s}{\partial W_{ij}}=U_if&rsquo;(z_i)x_j=\delta_ix<em>j
+$$
+现在的问题是，为了得到对整个矩阵W的一个梯度，应该怎样组合这些元素，最终我们得到：
+$$
+\frac{\partial s}{\partial W}=\delta x^T
+$$
+接下来，以只含有两个隐藏层单元的神经网络为例，计算s对x的偏导数
+$$
+\begin{align}
+\frac{\partial s}{\partial x</em>{i}} &amp;= \sum_{i=1}^2\frac{\partial s}{\partial a_i}\frac{\partial a<em>i}{\partial x</em>{j}}<br />
+&amp;= \sum_{i=1}^2\frac{\partial U^Ta}{\partial a_i}\frac{\partial a<em>i}{\partial x</em>{j}}<br />
+&amp;= \sum_{i=1}^2 U_i \frac{\partial f(W<em>ix+b)}{\partial x</em>{j}}<br />
+&amp;= \sum_{i=1}^2 U_if&rsquo;(W<em>ix+b) \frac{\partial W</em>{i\cdot}x}{\partial x<em>{j}}<br />
+&amp;= \sum</em>{i=1}^2 \delta<em>iW</em>{ij}<br />
+&amp;= W_{\cdot j}^T\delta
+\end{align}
+$$</p>
+
+<p>$$
+\frac{\partial s}{\partial x}=W^T\delta
+$$</p>
+
+<p>最终总体的目标函数为：</p>
+
+<p><img src="/assets/1549680296951.png" alt="1549680296951" /></p>
+
+                        </div>
+
+                        
+
+
+                        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/cs224n-lecture-3/">CS224n Lecture 3 高级词向量表示</a></li>
+        
+        <li><a href="/post/cs224n-lecture-2/">CS224n Lecture 2 Word2Vec</a></li>
+        
+        <li><a href="/post/cs224n-lecture-1-introduction/">CS224n Lecture 1 Introduction</a></li>
+        
+        <li><a href="/post/hello/">Hello</a></li>
+        
+        <li><a href="/archives/">Archives</a></li>
+        
+    </ul>
+</div>
+
+
+                        <div class="post-meta meta-tags">
+                            
+                            <ul class="clearfix">
+                                
+                                <li><a href="https://jesseli666.github.io/tags/cs224n">CS224n</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86">自然语言处理</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a></li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </article>
+                    
+    
+
+    
+    
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        <form id="search" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://jesseli666.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-6/" title="CS224n Lecture 6 依存语法分析">CS224n Lecture 6 依存语法分析</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-5/" title="CS224n Lecture 5 反向传播算法">CS224n Lecture 5 反向传播算法</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-4/" title="CS224n Lecture 4 词分类">CS224n Lecture 4 词分类</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-3/" title="CS224n Lecture 3 高级词向量表示">CS224n Lecture 3 高级词向量表示</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-2/" title="CS224n Lecture 2 Word2Vec">CS224n Lecture 2 Word2Vec</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-1-introduction/" title="CS224n Lecture 1 Introduction">CS224n Lecture 1 Introduction</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/hello/" title="Hello">Hello</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">cs224n-学习笔记(6)</a>
+    </li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://jesseli666.github.io/tags/cs224n/">cs224n</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">友情链接</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="http://info.ruc.edu.cn" title="中国人民大学信息学院">中国人民大学信息学院</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://jesseli666.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+        &copy; 2019 <a href="https://jesseli666.github.io">JesseLi&#39;s Blog By JesseLi</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        <a href="https://www.flysnow.org/" target="_blank">Theme</a> based on <a href="https://github.com/rujews/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
+
+
+
+
+
+
+</body>
+</html>

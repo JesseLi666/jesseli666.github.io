@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cs224n 学习笔记 on JesseLi&#39;s Blog</title>
+    <link>https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+    <description>Recent content in Cs224n 学习笔记 on JesseLi&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 16 Mar 2019 15:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>CS224n Lecture 6 依存语法分析</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-6/</link>
+      <pubDate>Sat, 16 Mar 2019 15:30:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-6/</guid>
+      <description>依存语法分析 语言结构的描述 语言结构的第一种描述，是短语结构将词组织起来。
+短语结构如：
+the cat
+a dog
+the large cat in a crate可以被分解成几个短语</description>
+    </item>
+    
+    <item>
+      <title>CS224n Lecture 5 反向传播算法</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-5/</link>
+      <pubDate>Sat, 16 Mar 2019 15:00:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-5/</guid>
+      <description>反向传播算法  本节课是对反向传播算法的详细介绍，使用勒四种方法来介绍反向传播。
+ 在很多情况下，反向传播将只是一个抽象的概念，只需要调包就能实现功能。但是在实际操作过程中可能会遇到问题，如果没用真正理解反向传播，就不知道产生问题的原因。
+第一种解释 上图是一个含有两个隐藏层的神经网络模型，最后的score的计算方法与上一节课相同。 $$ \begin{align} s &amp;amp;= U^Tf(W^{(2)}f(W^{(1)}x+b^{(1)})+b^{(2)}) &amp;amp;= U^Tf(W^{(2)}a^{(2)}+b^{(2)}) &amp;amp;= U^Ta^{(3)} \end{align} $$ 由之前的推导$\frac{\partial s}{\partial W_{ij}}=U_if&amp;rsquo;(z_i)x_j=\delta_ix_j$</description>
+    </item>
+    
+    <item>
+      <title>CS224n Lecture 4 词分类</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-4/</link>
+      <pubDate>Sat, 16 Mar 2019 14:00:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-4/</guid>
+      <description>词分类  本节课构建了一个简单的神经网络模型进行词分类任务，因为单独的词分类任务很少见，所以举了一个NER（命名实体识别）任务的例子，并详细介绍了使用梯度下降进行优化的计算过程。
+ 一些标记 通常有一个训练集 $$ {x_i,yi}^N{i=1} $$ x是input，比如单个单词或词向量，上下文窗口；y是label，可以是感情倾向，或是命名实体，词序列等。</description>
+    </item>
+    
+    <item>
+      <title>CS224n Lecture 3 高级词向量表示</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-3/</link>
+      <pubDate>Sat, 16 Mar 2019 13:00:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-3/</guid>
+      <description>高级词向量表示 Finish word2vec  I like deep learning and NLP.</description>
+    </item>
+    
+    <item>
+      <title>CS224n Lecture 2 Word2Vec</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-2/</link>
+      <pubDate>Sat, 16 Mar 2019 12:00:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-2/</guid>
+      <description>Word2Vec  本次课程介绍了Word Embedding的常用方法——Word2Vec的基本原理，与简单的函数推导、训练过程。
+ #####传统的词义表示
+传统方法如Wordnet，提供了英语词汇的分类信息
+存在大量的同义词资源，但是很难利用；缺失新词汇；主观；很难计算词的相似度
+早期NLP工作将单词视为原子符号，即one-hot表示（一个为1，其余为0），维数爆炸，而one-hot向量没有天然相似性</description>
+    </item>
+    
+    <item>
+      <title>CS224n Lecture 1 Introduction</title>
+      <link>https://jesseli666.github.io/post/cs224n-lecture-1-introduction/</link>
+      <pubDate>Sat, 16 Mar 2019 11:00:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/post/cs224n-lecture-1-introduction/</guid>
+      <description>CS224n Lecture 1 Introduction  第一堂课是课程的介绍，介绍了一下课程的背景和大致内容，没有讲很深入的东西。
+随着深度学习的火热，传统NLP的方法逐渐被使用DL的NLP方法取代。与传统方法相比，Deep NLP的最大特点就是不用人工设计特征，而是由神经网络自己学习特征。
+本课程的内容就是使用深度学习的方法进行NLP任务。</description>
+    </item>
+    
+  </channel>
+</rss>

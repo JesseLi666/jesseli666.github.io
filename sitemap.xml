@@ -3,33 +3,93 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://www.flysnow.org/post/hello/</loc>
+    <loc>https://jesseli666.github.io/about/</loc>
+    <lastmod>2019-03-16T16:06:52+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-6/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-5/</loc>
+    <lastmod>2019-03-16T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-4/</loc>
+    <lastmod>2019-03-16T14:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-3/</loc>
+    <lastmod>2019-03-16T13:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-2/</loc>
+    <lastmod>2019-03-16T12:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/cs224n-lecture-1-introduction/</loc>
+    <lastmod>2019-03-16T11:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/post/hello/</loc>
     <lastmod>2019-03-14T15:29:10+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://www.flysnow.org/categories/</loc>
+    <loc>https://jesseli666.github.io/archives/</loc>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.flysnow.org/post/</loc>
-    <lastmod>2019-03-14T15:29:10+08:00</lastmod>
+    <loc>https://jesseli666.github.io/tags/cs224n/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.flysnow.org/tags/</loc>
+    <loc>https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.flysnow.org/archives/</loc>
+    <loc>https://jesseli666.github.io/</loc>
+    <lastmod>2019-03-16T16:06:52+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.flysnow.org/</loc>
-    <lastmod>2019-03-14T15:29:10+08:00</lastmod>
+    <loc>https://jesseli666.github.io/post/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/tags/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/</loc>
+    <lastmod>2019-03-16T15:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   

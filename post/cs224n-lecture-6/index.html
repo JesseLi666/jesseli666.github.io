@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.54.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CS224n Lecture 6 依存语法分析 | JesseLi&#39;s Blog</title>
+    <meta property="og:title" content="CS224n Lecture 6 依存语法分析 - JesseLi&#39;s Blog">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2019-03-16T15:30:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2019-03-16T15:30:00&#43;08:00">
+        
+    <meta name="Keywords" content="机器学习,数据挖掘,推荐系统,python">
+    <meta name="description" content="CS224n Lecture 6 依存语法分析">
+        
+    <meta name="author" content="JesseLi">
+    <meta property="og:url" content="https://jesseli666.github.io/post/cs224n-lecture-6/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+        <link rel="stylesheet" href="/css/prism.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://jesseli666.github.io">
+                        JesseLi&#39;s Blog
+                    </a>
+                
+                <p class="description">半路出家程序猿</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://jesseli666.github.io">首页</a>
+                    
+                    <a  href="https://jesseli666.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://jesseli666.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">CS224n Lecture 6 依存语法分析</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2019年3月16日
+                        </date>
+                        
+                        <div class="post-meta">
+                            <span>|</span>
+                            
+                                <span class="meta-category"><a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">CS224n 学习笔记</a></span>
+                            
+                        </div>
+                        
+                        
+                        <div class="post-content">
+                            
+
+<h2 id="依存语法分析">依存语法分析</h2>
+
+<h5 id="语言结构的描述">语言结构的描述</h5>
+
+<p>语言结构的第一种描述，是短语结构将词组织起来。</p>
+
+<p>短语结构如：</p>
+
+<p>the cat</p>
+
+<p>a dog</p>
+
+<p><img src="/assets/1551528792775.png" alt="1551528792775" /></p>
+
+<p>the large cat in a crate可以被分解成几个短语</p>
+
+<p>可以用上下文无关文法（CFG）描述</p>
+
+<p>关于语言结构的另一种描述就是今天要介绍的依存句法结构，通过找到句子中的每一个词依赖的部分来描述句子结构。</p>
+
+<h5 id="依存句法">依存句法</h5>
+
+<p><img src="/assets/1551529361280.png" alt="1551529361280" /></p>
+
+<p>在上面这个歧义的句子中，句子意思的关键在于 &ldquo;from space&rdquo; 是修饰 &ldquo;whales&rdquo; 还是 &ldquo;study&rdquo;  。句子歧义的问题可以被看作是在依存结构中谁修饰谁的问题。</p>
+
+<p>对于 n 个短语来说，组成的树形结构有 $C_n=\frac{(2n)!}{(n+1)!n!}$ 种，又叫做Catalan数。</p>
+
+<p>有一个提供标记的依存数据集，<a href="http://universaldependencies.org/">Universal Dependencies</a></p>
+
+<p>在一开始，建立树库似乎比语法规则更慢，而语法规则似乎更有普适性。但是在机器学习领域，依存树可以合理的解释句子结构。</p>
+
+<p>树库具有以下优点：</p>
+
+<ul>
+<li>树库可以复用，而每个人的语法规则都不一样。</li>
+<li>使用了真实的、覆盖面广的数据，而语法规则依靠直觉</li>
+<li>含有重要的概率分布信息</li>
+<li>可以用来评估系统</li>
+</ul>
+
+<h5 id="依存语法与依存结构">依存语法与依存结构</h5>
+
+<p>90年代的句法分析论文99%都是短语结构树，但后来人们发现依存句法树标注简单，parser准确率高，所以后来（特别是最近十年）基本上就是依存句法树的天下了。</p>
+
+<p><img src="/assets/1551531254998.png" alt="1551531254998" /></p>
+
+<p>如果没有依存关系标记，上图的树实际上与限制性CFG等价，而通过一些语法关系来给依存关系分类，得到下图，事情就会不一样</p>
+
+<p><img src="/assets/1551531387790.png" alt="1551531387790" /></p>
+
+<p>每一个箭头包括一个头部（head）和一个独立项（dependent）</p>
+
+<p>最近提出了一种泛依存（Universal Dependency），主要不同之处在于，介词没有任何dependent</p>
+
+<h5 id="依存分析的发展">依存分析的发展</h5>
+
+<p>Panini 在公元5世纪提出了 Panini 语法</p>
+
+<p>1959年，L. Tesniere，被称为现在依存之父</p>
+
+<p>依存文法在时序比较自由的语言中比较流行（俄语、汉语等），而有序的语言（如英语）适合CFG。</p>
+
+<p>Davis Hays 是美国计算语言学的创始人，在1962年构造了一个英语的依存分析。</p>
+
+<h5 id="怎样做依存分析">怎样做依存分析</h5>
+
+<p>分析一个句子的方法，是分析每个词和其他单词的依赖关系。</p>
+
+<p><img src="/assets/1551617079038.png" alt="1551617079038" /></p>
+
+<p>需要加一些限制：</p>
+
+<ul>
+<li>只能有一个单词是ROOT的依赖项</li>
+<li>不能有环：A-&gt;B, B-&gt;A</li>
+</ul>
+
+<p>如果依存关系两两不交叉，那么这个依存关系是嵌套的。</p>
+
+<p>完全嵌套的依存树可以被投影到一个平面上，然后得到一个嵌套关系。</p>
+
+<p>英语中大部分依存关系是嵌套的。</p>
+
+<p>提取依存关系的方法：</p>
+
+<ul>
+<li><p>动态编程法</p></li>
+
+<li><p>图算法：最小生成树</p></li>
+
+<li><p>约束补偿</p></li>
+
+<li><p>确定性依存分析</p></li>
+</ul>
+
+<h5 id="研究热点">研究热点</h5>
+
+<p>这节课介绍的论文题为《Improving Distributional Similarity with Lessons Learned from Word Embeddings》</p>
+
+<p>我们在前面学习了两类生成词向量的方法：</p>
+
+<p><img src="/assets/1551618484978.png" alt="1551618484978" /></p>
+
+<p>Count-based distributional 模型使用共现矩阵来生成词向量，基于神经网络的方法如负采样的Skip-gram，GloVe</p>
+
+<p>通常认为基于神经网络的方法更好，Levy et. al. 提出是超参和系统的选择更重要，而不是  embedding 算法本身。</p>
+
+<p>作者认为，通过超参数的调整，Count-based distributional 模型的性能接近于神经网络模型，两种方法不能说哪种一定更优。</p>
+
+<p><img src="/assets/1551621902923.png" alt="1551621902923" /></p>
+
+<p>通过调整8个超参数，结果显示没有一致的最优模型。</p>
+
+<p><img src="/assets/1551621954373.png" alt="1551621954373" /></p>
+
+<h5 id="贪婪的基于迁移的依存分析">贪婪的基于迁移的依存分析</h5>
+
+<p>这里介绍了 arc-standard transition-based parser</p>
+
+<p>我们想要分析句子 &ldquo;I ate fish&rdquo;，有一个栈 stack（灰色），一开始只有[root]，右端为顶部，还有一个缓冲区 buffer（橙色），缓冲区的左端作为顶部。</p>
+
+<p><img src="/assets/1551622826171.png" alt="1551622826171" /></p>
+
+<p>在这个分析方法中，有三种操作，分别是：</p>
+
+<ul>
+<li>shift，把 buffer 顶部弹出，放入 stack 顶部</li>
+</ul>
+
+<p><img src="/assets/1551622907984.png" alt="1551622907984" /></p>
+
+<ul>
+<li>left-arc，stack 中第二个顶部元素是顶部元素的依赖项，然后把这个依赖项从 stack 中拿走，再 shift 一下，将 fish 放到 stack 中，这样 buffer 就空了</li>
+</ul>
+
+<p><img src="/assets/1551623146150.png" alt="1551623146150" /></p>
+
+<ul>
+<li>right-arc，规定 stack 中顶部元素是第二个顶部元素的依赖项</li>
+</ul>
+
+<p><img src="/assets/1551623297414.png" alt="1551623297414" /></p>
+
+<p>最终 buffer 为空，stack 中只有 [root]</p>
+
+<p>那么如何决定下一步执行什么操作呢？可以用一个分类器来操作。我们在树库中已经有句子的依存树，可以得到从句子中得到这个依存树的唯一的操作序列，这样我们就有了监督数据集。正常情况下不只有三种操作，而是有几十种分类。</p>
+
+<p>下面介绍如何提取特征。</p>
+
+<p>传统的方法考虑所有单词的词性等信息作为特征，这样的时间复杂度是线性的（随句子长度成正比）</p>
+
+<p>依存分析的评估方法：</p>
+
+<ul>
+<li>UAS：只考虑弧的准确率</li>
+<li>LAS：同时考虑弧和标签的准确率</li>
+</ul>
+
+<p>传统的方法存在以下缺点：</p>
+
+<ul>
+<li>特征是稀疏的，有很多没啥用的特征</li>
+<li>这种传统的特征不能覆盖所有的情况</li>
+<li>计算如此多的特征代价昂贵</li>
+</ul>
+
+<h5 id="神经网络依存分析">神经网络依存分析</h5>
+
+<p><img src="/assets/1551625557213.png" alt="1551625557213" /></p>
+
+<p>除了将单词用 d 维表示之外，我们还将 POS（词性） 和  依存标签（如名词性主语）用 d 维向量表示。</p>
+
+<p>我们提取特定的位置的特征（top of stack, top of buffer），把词向量、POS 表示、依存关系表示（来自前面建立的弧）合并成一个特征向量。</p>
+
+<p>然后输入一个神经网络模型：
+<img src="/assets/1551625960781.png" alt="1551625960781" /></p>
+
+<h5 id="神经网络中的非线性">神经网络中的非线性</h5>
+
+<p>如果不使用非线性，深度神经网络将是无用的。非线性的作用是把神经元组合起来得到一个近似函数。</p>
+
+<p><img src="/assets/1551626235497.png" alt="1551626235497" /></p>
+
+<p>有很多非线性函数可选，ReLU 被证明效果很好。ReLU在反向传播时要么不反馈残差，要么原样反馈残差。</p>
+
+<p>Chen&amp;Manning 的工作被许多人继续往前推进，走在最前沿的是Google，包括：</p>
+
+<ul>
+<li>更大更深调参调得更好（更昂贵）的神经网络</li>
+<li>Beam Search</li>
+<li>在决策序列全局进行类似CRF推断的方法</li>
+</ul>
+
+<p>产生了比如 SyntaxNet 模型，有一个更大更优化的方法。</p>
+
+                        </div>
+
+                        
+
+
+                        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/post/cs224n-lecture-5/">CS224n Lecture 5 反向传播算法</a></li>
+        
+        <li><a href="/post/cs224n-lecture-4/">CS224n Lecture 4 词分类</a></li>
+        
+        <li><a href="/post/cs224n-lecture-3/">CS224n Lecture 3 高级词向量表示</a></li>
+        
+        <li><a href="/post/cs224n-lecture-2/">CS224n Lecture 2 Word2Vec</a></li>
+        
+        <li><a href="/post/cs224n-lecture-1-introduction/">CS224n Lecture 1 Introduction</a></li>
+        
+    </ul>
+</div>
+
+
+                        <div class="post-meta meta-tags">
+                            
+                            <ul class="clearfix">
+                                
+                                <li><a href="https://jesseli666.github.io/tags/cs224n">CS224n</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86">自然语言处理</a></li>
+                                
+                                <li><a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0">学习笔记</a></li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </article>
+                    
+    
+
+    
+    
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        <form id="search" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://jesseli666.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-6/" title="CS224n Lecture 6 依存语法分析">CS224n Lecture 6 依存语法分析</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-5/" title="CS224n Lecture 5 反向传播算法">CS224n Lecture 5 反向传播算法</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-4/" title="CS224n Lecture 4 词分类">CS224n Lecture 4 词分类</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-3/" title="CS224n Lecture 3 高级词向量表示">CS224n Lecture 3 高级词向量表示</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-2/" title="CS224n Lecture 2 Word2Vec">CS224n Lecture 2 Word2Vec</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/cs224n-lecture-1-introduction/" title="CS224n Lecture 1 Introduction">CS224n Lecture 1 Introduction</a>
+    </li>
+    
+    <li>
+        <a href="https://jesseli666.github.io/post/hello/" title="Hello">Hello</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">cs224n-学习笔记(6)</a>
+    </li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://jesseli666.github.io/tags/cs224n/">cs224n</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+    
+    <a href="https://jesseli666.github.io/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/">自然语言处理</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">友情链接</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="http://info.ruc.edu.cn" title="中国人民大学信息学院">中国人民大学信息学院</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://jesseli666.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+        &copy; 2019 <a href="https://jesseli666.github.io">JesseLi&#39;s Blog By JesseLi</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        <a href="https://www.flysnow.org/" target="_blank">Theme</a> based on <a href="https://github.com/rujews/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on 飞雪无情的博客</title>
-    <link>http://www.flysnow.org/categories/</link>
-    <description>Recent content in Categories on 飞雪无情的博客</description>
+    <title>Categories on JesseLi&#39;s Blog</title>
+    <link>https://jesseli666.github.io/categories/</link>
+    <description>Recent content in Categories on JesseLi&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     
-	<atom:link href="http://www.flysnow.org/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://jesseli666.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Cs224n 学习笔记</title>
+      <link>https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sat, 16 Mar 2019 15:30:00 +0800</pubDate>
+      
+      <guid>https://jesseli666.github.io/categories/cs224n-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
