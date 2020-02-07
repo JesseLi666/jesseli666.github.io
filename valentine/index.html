@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>给杨涵宝宝的情书~</title>
+
+    <!-- <link rel="stylesheet" href="css/reset.css" /> -->
+    <!-- <link rel="stylesheet" href="css/animate.min.css" /> -->
+    <!-- <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" /> -->
+
+    <!--  加载fullpage.js -->
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/jquery.fullPage.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css//fullpage.min.css" />
+    <style type="text/css">
+        @font-face {
+            font-family: digit;
+            src: url('../fonts/digital-7_mono.ttf') format("truetype");
+        }
+    </style>
+    <script src="../js/jquery.js"></script>
+    <!-- <script src="../js/jquery.fullpage.js"></script> -->
+    <script src="../js/fullpage.min.js"></script>
+    <script src="../js/functions.js"></script>
+    <script type="text/javascript" src="../js/points.js"></script>
+    <script type="text/javascript" src="../js/garden_dev.js"></script>
+
+</head>
+
+<body>
+    <div id="fullpage">
+        <div class="section">
+            <div class="text">
+                <div id="code1" class="code">
+                    我亲爱的宝宝，<br>
+                    这是一封给你的💌，<br>
+                    向上滑来开启吧 ~
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.9.18</div>
+                👦和👧重逢了，<br>
+                我们的故事开始了
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.9.30</div>
+                我们第一次约会的日子
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.10.1</div>
+                一起看🎆
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.11.16</div>
+                那天我没忍住抱你<br>
+                能听见我的心跳吗💓
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.11.24</div>
+                鼓起勇气向你表白
+            </div>
+        </div>
+        <div class="section">
+            <div id="loveHeart">
+                <canvas id="garden"></canvas>
+                <div class="text" id="word">
+                    我们在一起已经<div id="date-count"></div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.12.13</div>
+                宝宝的生日，<br>
+                一起做了🎂
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.12.24</div>
+                平安夜🎄，<br>
+                我们在一起一个月啦
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                <div class="date">2019.1.4</div>
+                ⛸️⛸️⛸️
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                在最好的年华相遇<br>
+                庆幸没有错过彼此
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                让我们把故事<br>
+                一直写下去吧👫
+            </div>
+        </div>
+        <div class="section">
+            <div class="text">
+                情人节快乐呀💏<br>
+                我的宝宝
+            </div>
+        </div>
+        <!--隐藏彩蛋？-->
+        <div class="section fp-auto-height final_section">
+
+            <div class="text" style="margin-top: 40px;">
+                我想你啦<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var flag = false;
+            $('#fullpage').fullpage(
+                {
+                    sectionsColor: ['#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66',
+                        '#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66'],
+                    navigation: true,
+                    verticalCentered: true,
+                    autoScrolling: true,
+                    afterLoad: function (origin, destination, direction) {
+                        var loadedSection = this;
+                        // using index
+                        if (destination.index == 6 & flag == false) {
+                            // alert("Section 3 ended loading");
+                            adjustWordPosition();
+                            flag = true;
+                            // setTimeout(function () {
+                            //     startXRWAnimation();
+                            // }, 0);
+                            setTimeout(function () {
+                                startHeartAnimation();
+                            }, 0);
+                        }
+                    }
+                }
+            );
+
+            $("#code1").typewriter();
+
+            var together = new Date();
+            together.setFullYear(2019, 11, 24);
+            together.setHours(21);
+            together.setMinutes(0);
+            together.setSeconds(0);
+            together.setMilliseconds(0);
+
+            timeElapse(together);
+            setInterval(function () {
+                timeElapse(together);
+            }, 500);
+
+        });
+    </script>
+</body>
+
+</html>

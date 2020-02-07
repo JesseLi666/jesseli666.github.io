@@ -1,0 +1,34 @@
+.text {
+    color: #8b6a60;
+    font-family: 'Lato' , 'Microsoft YaHei', '微软雅黑';
+    font-weight: 300;
+    font-size: 30px;
+    font-style: normal;
+    text-align: left;
+    margin-left: 20px;
+    line-height: 50px;
+}
+
+.text h1 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.code {
+    white-space: pre;
+}
+
+#date-count .digit{
+	font-family: "digit";
+	font-size: 36px;
+}
+
+#loveHeart {
+	float: left;
+	width: 800px;
+	height: 800px;
+}
+
+#word {
+    text-align: center;
+}
