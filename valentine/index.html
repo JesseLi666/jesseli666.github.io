@@ -59,6 +59,9 @@
                 <div class="date">2019.10.1</div>
                 一起看🎆
             </div>
+            <div class="photo">
+                <img class="image" src="../images/section4.webp">
+            </div>
         </div>
         <div class="section">
             <div class="text">
@@ -71,6 +74,9 @@
             <div class="text">
                 <div class="date">2019.11.24</div>
                 鼓起勇气向你表白
+            </div>
+            <div class="photo">
+                <img class="image" src="../images/section6.webp">
             </div>
         </div>
         <div class="section">
@@ -87,6 +93,9 @@
                 宝宝的生日，<br>
                 一起做了🎂
             </div>
+            <div class="photo">
+                <img class="image" src="../images/section8.webp">
+            </div>
         </div>
         <div class="section">
             <div class="text">
@@ -94,11 +103,17 @@
                 平安夜🎄，<br>
                 我们在一起一个月啦
             </div>
+            <div class="photo">
+                <img class="image" src="../images/section9.webp">
+            </div>
         </div>
         <div class="section">
             <div class="text">
                 <div class="date">2019.1.4</div>
                 ⛸️⛸️⛸️
+            </div>
+            <div class="photo">
+                <img class="image" src="../images/section10.webp">
             </div>
         </div>
         <div class="section">
@@ -127,7 +142,8 @@
             </div>
         </div>
     </div>
-
+    <div id="audioBox">
+    </div>
     <script>
         $(document).ready(function () {
             var flag = false;
@@ -152,10 +168,12 @@
                                 startHeartAnimation();
                             }, 0);
                         }
-                    }
+                    },
+                    // afterRender: function () {
+                    //     $('#audio')[0].play();
+                    // }
                 }
             );
-
             $("#code1").typewriter();
 
             var together = new Date();
@@ -169,7 +187,18 @@
             setInterval(function () {
                 timeElapse(together);
             }, 500);
-
+            // 动态添加音乐，并绑定播放动作
+            setTimeout(function () {
+                $("#audioBox").append(`<audio src="../bgm.mp3" data-autoplay loop id="audio"></audio>`);
+                let audio = document.getElementById('audio');
+                document.addEventListener("touchstart", function () {
+                    audio.play();
+                });
+                // 这段是兼容微信浏览器的。后面会说到
+                document.addEventListener("WeixinJSBridgeReady", function () {
+                    audio.play();
+                }, false);
+            }, 1000)
         });
     </script>
 </body>
