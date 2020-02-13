@@ -60,7 +60,7 @@
                 一起看🎆
             </div>
             <div class="photo">
-                <img class="image" src="../images/section4.webp">
+                <img class="image" data-src="../images/section4.webp">
             </div>
         </div>
         <div class="section">
@@ -76,7 +76,7 @@
                 鼓起勇气向你表白
             </div>
             <div class="photo">
-                <img class="image" src="../images/section6.webp">
+                <img class="image" data-src="../images/section6.webp">
             </div>
         </div>
         <div class="section">
@@ -94,7 +94,7 @@
                 一起做了🎂
             </div>
             <div class="photo">
-                <img class="image" src="../images/section8.webp">
+                <img class="image" data-src="../images/section8.webp">
             </div>
         </div>
         <div class="section">
@@ -104,7 +104,7 @@
                 我们在一起一个月啦
             </div>
             <div class="photo">
-                <img class="image" src="../images/section9.webp">
+                <img class="image" data-src="../images/section9.webp">
             </div>
         </div>
         <div class="section">
@@ -113,7 +113,7 @@
                 ⛸️⛸️⛸️
             </div>
             <div class="photo">
-                <img class="image" src="../images/section10.webp">
+                <img class="image" data-src="../images/section10.webp">
             </div>
         </div>
         <div class="section">
@@ -137,12 +137,13 @@
         <!--隐藏彩蛋？-->
         <div class="section fp-auto-height final_section">
 
-            <div class="text" style="margin-top: 40px;">
+            <div class="text" style="margin-top: 40px; margin-bottom: 40px;">
                 我想你啦<br>
             </div>
         </div>
     </div>
     <div id="audioBox">
+        <audio data-src="../bgm.mp3" data-autoplay loop id="audio"></audio>
     </div>
     <script>
         $(document).ready(function () {
@@ -151,7 +152,7 @@
                 {
                     sectionsColor: ['#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66',
                         '#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66'],
-                    navigation: true,
+                    navigation: false,
                     verticalCentered: true,
                     autoScrolling: true,
                     afterLoad: function (origin, destination, direction) {
@@ -177,7 +178,7 @@
             $("#code1").typewriter();
 
             var together = new Date();
-            together.setFullYear(2019, 11, 24);
+            together.setFullYear(2019, 10, 24);
             together.setHours(21);
             together.setMinutes(0);
             together.setSeconds(0);
@@ -189,7 +190,7 @@
             }, 500);
             // 动态添加音乐，并绑定播放动作
             setTimeout(function () {
-                $("#audioBox").append(`<audio src="../bgm.mp3" data-autoplay loop id="audio"></audio>`);
+                // $("#audioBox").append(``);
                 let audio = document.getElementById('audio');
                 document.addEventListener("touchstart", function () {
                     audio.play();
