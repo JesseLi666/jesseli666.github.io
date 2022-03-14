@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>给杨涵宝宝的情书~</title>
+
+    <!-- <link rel="stylesheet" href="css/reset.css" /> -->
+    <!-- <link rel="stylesheet" href="css/animate.min.css" /> -->
+    <!-- <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" /> -->
+
+    <!--  加载fullpage.js -->
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/jquery.fullPage.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css//fullpage.min.css" />
+    <style type="text/css">
+        @font-face {
+            font-family: digit;
+            src: url('../fonts/digital-7_mono.ttf') format("truetype");
+        }
+    </style>
+    <script src="../js/jquery.js"></script>
+    <!-- <script src="../js/jquery.fullpage.js"></script> -->
+    <script src="../js/fullpage.min.js"></script>
+    <script src="../js/functions.js"></script>
+    <script type="text/javascript" src="../js/points.js"></script>
+    <script type="text/javascript" src="../js/garden_dev.js"></script>
+
+</head>
+
+<body>
+    <div id="fullpage">
+        <div class="section">
+            <div id="loveHeart">
+                <canvas id="garden"></canvas>
+                <div class="text" id="word">
+                    我们在一起已经<div id="date-count"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var flag = false;
+            $('#fullpage').fullpage(
+                {
+                    sectionsColor: ['#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66',
+                        '#ee9ca7', '#66cccc', '#ffcc66', '#00cc99', '#ee9ca7', '#66cccc', '#ffcc66'],
+                    navigation: false,
+                    verticalCentered: true,
+                    autoScrolling: true,
+                    afterLoad: function (origin, destination, direction) {
+                        var loadedSection = this;
+                        // using index
+                        if (destination.index == 0 & flag == false) {
+                            // alert("Section 3 ended loading");
+                            adjustWordPosition();
+                            flag = true;
+                            // setTimeout(function () {
+                            //     startXRWAnimation();
+                            // }, 0);
+                            setTimeout(function () {
+                                startHeartAnimation();
+                            }, 0);
+                        }
+                    },
+                    // afterRender: function () {
+                    //     $('#audio')[0].play();
+                    // }
+                }
+            );
+            $("#code1").typewriter();
+
+            var together = new Date();
+            together.setFullYear(2019, 10, 24);
+            together.setHours(21);
+            together.setMinutes(0);
+            together.setSeconds(0);
+            together.setMilliseconds(0);
+
+            timeElapse(together);
+            setInterval(function () {
+                timeElapse(together);
+            }, 500);
+            // 动态添加音乐，并绑定播放动作
+            setTimeout(function () {
+                // $("#audioBox").append(``);
+                let audio = document.getElementById('audio');
+                document.addEventListener("touchstart", function () {
+                    audio.play();
+                });
+                // 这段是兼容微信浏览器的。后面会说到
+                document.addEventListener("WeixinJSBridgeReady", function () {
+                    audio.play();
+                }, false);
+            }, 1000)
+        });
+    </script>
+</body>
+
+</html>
